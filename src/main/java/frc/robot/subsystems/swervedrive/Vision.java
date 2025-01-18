@@ -22,12 +22,15 @@ import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import java.awt.Desktop;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+
+import org.ironmaple.simulation.motorsims.SimMotorState;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -142,13 +145,17 @@ public class Vision
     }
     for (Cameras camera : Cameras.values())
     {
+      SmartDashboard.putString("SwerveSubsystem/Camera Name", camera.toString());
       Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
+      SmartDashboard.putBoolean("SwerveSubsystem/Vision Pose Estimate isPresent", poseEst.isPresent());
       if (poseEst.isPresent())
       {
         var pose = poseEst.get();
         swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(),
                                          pose.timestampSeconds,
                                          camera.curStdDevs);
+        var estimatedPose = pose.estimatedPose.toPose2d();
+        SmartDashboard.putNumberArray("SwerveSubsystem/Vision Pose Estimate", new double[] {estimatedPose.getX(), estimatedPose.getY(), estimatedPose.getRotation().getDegrees()});
       }
     }
 
@@ -336,32 +343,12 @@ public class Vision
   enum Cameras
   {
     /**
-     * Left Camera
-     */
-    LEFT_CAM("left",
-             new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(30)),
-             new Translation3d(Units.inchesToMeters(12.056),
-                               Units.inchesToMeters(10.981),
-                               Units.inchesToMeters(8.44)),
-             VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)),
-    /**
-     * Right Camera
-     */
-    RIGHT_CAM("right",
-              new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(-30)),
-              new Translation3d(Units.inchesToMeters(12.056),
-                                Units.inchesToMeters(-10.981),
-                                Units.inchesToMeters(8.44)),
-              VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)),
-    /**
      * Center Camera
      */
     CENTER_CAM("center",
-               new Rotation3d(0, Units.degreesToRadians(18), 0),
-               new Translation3d(Units.inchesToMeters(-4.628),
-                                 Units.inchesToMeters(-10.687),
-                                 Units.inchesToMeters(16.129)),
-               VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1));
+            new Rotation3d(0, 0, 0),
+               new Translation3d(0.36, 0, 0),
+               VecBuilder.fill(1, 1, 1), VecBuilder.fill(0.5, 0.5, 1));
 
     /**
      * Latency alert to use when high latency is detected.
