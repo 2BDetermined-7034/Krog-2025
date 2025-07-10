@@ -81,7 +81,7 @@ public class RobotContainer {
         joystick.L1().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         joystick.L2().whileTrue(new ShootCommand(shooter, Degrees.of(55)));
-        joystick.R2().whileTrue(new ShootCommand(shooter, Degrees.of(0)));
+        joystick.R2().whileTrue(new ShootCommand(shooter, Degrees.of(40)));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
