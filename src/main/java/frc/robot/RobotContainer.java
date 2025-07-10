@@ -18,19 +18,23 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
+import frc.robot.commands.ShootCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+    private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+
+    private Shooter shooter = new Shooter();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -75,6 +79,9 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press
         joystick.L1().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        joystick.L2().whileTrue(new ShootCommand(shooter, Degrees.of(55)));
+        joystick.R2().whileTrue(new ShootCommand(shooter, Degrees.of(0)));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
