@@ -6,17 +6,16 @@ import frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-public class ShootCommand extends Command {
+public class IntakeCommand extends Command {
 	private Shooter shooter;
 	private Angle shooterAngle;
-	private double launchVolts = 10.0;
+	private double launchVolts = -3.0;
 	private double kickerSpeed = 0.3;
 
-	public ShootCommand(Shooter shooter, Angle angle) {
+	public IntakeCommand(Shooter shooter) {
 		this.shooter = shooter;
 		shooter.setLaunchVoltage(0.0);
-		shooter.launchSpeed = 60.0;
-		shooterAngle = angle;
+		shooterAngle = Degrees.of(55.0);
 	}
 
 	public void initialize() {
@@ -26,10 +25,7 @@ public class ShootCommand extends Command {
 	@Override
 	public void execute() {
 		shooter.setLaunchVoltage(launchVolts);
-
-		if (shooter.atLaunchSpeed()) {
-			shooter.setKickerSpeed(kickerSpeed);
-		}
+		shooter.setKickerSpeed(-0.3);
 	}
 
 	@Override
