@@ -10,12 +10,13 @@ public class ShootCommand extends Command {
 	private Shooter shooter;
 	private Angle shooterAngle;
 	private double launchVolts = 10.0;
-	private double kickerSpeed = 0.3;
+	private double launchSpeed = 20.0;
+	private double kickerSpeed = 0.1;
 
 	public ShootCommand(Shooter shooter, Angle angle) {
 		this.shooter = shooter;
 		shooter.setLaunchVoltage(0.0);
-		shooter.launchSpeed = 60.0;
+		shooter.launchSpeed = launchSpeed;
 		shooterAngle = angle;
 	}
 

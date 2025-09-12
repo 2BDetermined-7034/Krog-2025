@@ -10,13 +10,11 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
@@ -39,7 +37,7 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final CommandPS5Controller joystick = new CommandPS5Controller(0);
+    private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -53,9 +51,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(joystick.getLeftY() * MaxSpeed * 0.3) // Drive forward with negative Y (forward)
+                    .withVelocityY(joystick.getLeftX() * MaxSpeed * 0.3) // Drive left with negative X (left)
+                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * 0.3) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -66,8 +64,8 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        joystick.cross().whileTrue(drivetrain.applyRequest(() -> brake));
-        joystick.circle().whileTrue(drivetrain.applyRequest(() ->
+        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        joystick.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
 
@@ -79,11 +77,11 @@ public class RobotContainer {
 //        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        joystick.L1().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        joystick.L2().whileTrue(new ShootCommand(shooter, Degrees.of(55)));
-        joystick.R2().whileTrue(new ShootCommand(shooter, Degrees.of(40)));
-        joystick.square().whileTrue(new IntakeCommand(shooter));
+        joystick.leftTrigger().whileTrue(new ShootCommand(shooter, Degrees.of(55)));
+        joystick.rightTrigger().whileTrue(new ShootCommand(shooter, Degrees.of(25)));
+        joystick.x().whileTrue(new IntakeCommand(shooter));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
